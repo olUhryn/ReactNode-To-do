@@ -3,6 +3,9 @@ import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import "./index.css";
+import { useDispatch } from "react-redux";
+import { setUserData } from "@store/modules/users";
+
 function SignInForm({ SignIn, setEmail, setPassword, switchTabs }) {
   return (
     <Form>
@@ -88,27 +91,58 @@ function Authentication() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+
   const switchTabs = (value) => {
     console.log(value);
     setActiveTab(value);
   };
+
   const SignIn = (e) => {
     e.preventDefault();
-    console.log("here");
-    axios.post("http://localhost:8080/api/auth/login", {
-      email,
-      password,
-    });
+    axios
+      .post(
+        "http://localhost:8080/api/auth/login",
+        {
+          email,
+          password,
+        },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          localStorage.setItem("accessToken", res.data.accessToken);
+          console.log(res);
+          function parseJwt(token) {
+            if (!token) {
+              return;
+            }
+            const base64Url = token.split(".")[1];
+            const base64 = base64Url.replace("-", "+").replace("_", "/");
+            return JSON.parse(window.atob(base64));
+          }
+
+          dispatch(setUserData(parseJwt(res.data.accessToken)));
+        }
+      });
   };
+
   const SignUp = (e) => {
     e.preventDefault();
-    console.log("here");
-    axios.post("http://localhost:8080/api/users", {
-      email,
-      name,
-      password,
-    });
+    axios
+      .post("http://localhost:8080/api/users", {
+        email,
+        name,
+        password,
+      })
+      .then((response) => {
+        console.log(response);
+        if (response.status === 200) {
+          setActiveTab(0);
+        }
+      });
   };
+
   return (
     <div className="d-flex flex-column">
       {!activeTab ? (

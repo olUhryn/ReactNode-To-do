@@ -5,13 +5,13 @@ import cookieParser from "cookie-parser";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 import userRouter from "./routes/users-routes.js";
-import authRouter from './routes/auth-routes.js'
+import authRouter from "./routes/auth-routes.js";
 dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 8080;
-const corsOptions = { credentials: true, origin: process.env.URL || "*" };
+const corsOptions = { credentials: true, origin: process.env.URL || "http://localhost:3000" };
 
 app.use(cors(corsOptions));
 app.use(json());

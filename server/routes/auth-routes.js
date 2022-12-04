@@ -23,9 +23,12 @@ router.post("/login", async (req, res) => {
     if (!validPassword) {
       return res.status(401).json({ error: "Incorrect password" });
     } else {
+      console.log(users.rows[0])
       let tokens = jwtTokens(users.rows[0]);
-      res.cookie("refresh_token", tokens.refreshToken, { httpOnly: true });
-      delete tokens.refreshToken
+      res.cookie("refresh_token", tokens.refreshToken, {
+        httpOnly: true,
+      });
+      delete tokens.refreshToken;
       return res.json(tokens);
     }
   } catch (e) {

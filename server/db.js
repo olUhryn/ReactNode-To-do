@@ -6,7 +6,7 @@ let localPoolConfig = {
   password: "1",
   host: "localhost",
   port: "5432",
-  database: "chess",
+  database: "tododb",
 };
 
 const poolConfig = process.env.DATABASE_URL

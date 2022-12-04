@@ -1,4 +1,5 @@
 import Home from "./pages/Home";
+import ManagePanel from "./pages/ManagePanel";
 
 const genericRoutes = () => {
   return [
@@ -6,6 +7,13 @@ const genericRoutes = () => {
       name: "Home",
       path: "/",
       component: Home,
+      displayOnNav: true,
+      exact: true,
+    },
+    {
+      name: "Manage Panel",
+      path: "/manage-panel",
+      component: ManagePanel,
       displayOnNav: true,
       exact: true,
     },
