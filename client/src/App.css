@@ -1,0 +1,21 @@
+*{
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+  color: #d2d1d1;
+}
+html{
+  height: 100%;
+  width: 100%;
+}
+html,body,#root,.app{
+  min-width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.app{
+  background: #252321;
+}
