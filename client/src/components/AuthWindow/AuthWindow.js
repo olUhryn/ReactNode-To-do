@@ -5,6 +5,7 @@ import axios from "axios";
 import "./index.css";
 import { useDispatch } from "react-redux";
 import { setUserData } from "@store/modules/users";
+import { useHistory } from "react-router-dom";
 
 function SignInForm({ SignIn, setEmail, setPassword, switchTabs }) {
   return (
@@ -92,7 +93,7 @@ function Authentication() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-
+  const history = useHistory();
   const switchTabs = (value) => {
     console.log(value);
     setActiveTab(value);
@@ -121,8 +122,9 @@ function Authentication() {
             const base64 = base64Url.replace("-", "+").replace("_", "/");
             return JSON.parse(window.atob(base64));
           }
-
-          dispatch(setUserData(parseJwt(res.data.accessToken)));
+          let userData = parseJwt(res.data.accessToken);
+          dispatch(setUserData(userData));
+          history.push("/manage-panel");
         }
       });
   };

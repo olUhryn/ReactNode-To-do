@@ -7,16 +7,19 @@ import { setUserData } from "@store/modules/users";
 
 function Home() {
   const userData = useSelector((state) => state.users.userData);
+  const dispatch = useDispatch();
 
-  const logOut = () => {
+  const logOut = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("accessToken");
+    dispatch(setUserData(null));
+  };
 
-  }
-  console.log(userData)
   return (
     <div className="home">
       <Container>
         <h2 className="mt-5 h1">Your Profile</h2>
-        {userData?.role ? (
+        {userData?.user_role ? (
           <Button variant="primary" type="submit" onClick={(e) => logOut(e)}>
             Log out
           </Button>

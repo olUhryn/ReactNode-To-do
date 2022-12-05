@@ -7,7 +7,7 @@ import { getStorageItem } from "../services/localstorageService";
 // Add a request interceptor
 axios.interceptors.request.use(
   (config) => {
-    const token = getStorageItem('access_token');
+    const token = getStorageItem('accessToken');
     if (token) {
       config.headers["Authorization"] = "Bearer " + token;
     }

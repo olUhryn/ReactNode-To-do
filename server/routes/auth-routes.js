@@ -23,7 +23,6 @@ router.post("/login", async (req, res) => {
     if (!validPassword) {
       return res.status(401).json({ error: "Incorrect password" });
     } else {
-      console.log(users.rows[0])
       let tokens = jwtTokens(users.rows[0]);
       res.cookie("refresh_token", tokens.refreshToken, {
         httpOnly: true,
@@ -39,7 +38,6 @@ router.post("/login", async (req, res) => {
 router.get("/refresh-token", async (req, res) => {
   try {
     const refreshToken = req.cookies.refresh_token;
-    console.log(refreshToken);
     if (!refreshToken) {
       res.status(401).json({ error: "Null refresh token" });
     } else {
@@ -54,6 +52,7 @@ router.get("/refresh-token", async (req, res) => {
             res.cookie("refresh_token", tokens.refreshToken, {
               httpOnly: true,
             });
+            delete tokens.refreshToken;
             res.json(tokens);
           }
         }

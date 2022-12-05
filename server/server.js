@@ -4,8 +4,10 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import userRouter from "./routes/users-routes.js";
+import usersRouter from "./routes/users-routes.js";
 import authRouter from "./routes/auth-routes.js";
+import projectsRouter from "./routes/projects-routes.js";
+
 dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -18,8 +20,9 @@ app.use(json());
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "../client/build")));
 
-app.use("/api/users", userRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/projects", projectsRouter);
 
 app.get("*", (req, res) => {
   res.sendFile(join(__dirname, "../client/build", "index.html"));
