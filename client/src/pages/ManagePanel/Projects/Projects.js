@@ -39,7 +39,7 @@ function Projects(props) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/projects?user_id=${userData.user_id}`, {
+      .get(`http://localhost:8080/api/projects?owner_id=${userData.user_id}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -70,7 +70,7 @@ function Projects(props) {
       <Col className="col-6 d-flex flex-column">
         <h3 className="mb-2">Projects:</h3>
         {projects.map((project) => (
-          <div className="p-2 project-item mb-2" key={project.project_id}>
+          <div className="p-2 project-item mb-2" key={project.project_id} onClick={(e)=>{history.push(`/project/${project.project_id}`)}}>
             {project.project_name}
           </div>
         ))}

@@ -6,8 +6,20 @@ import { jwtTokens } from "../utils/jwt-helper.js";
 const router = express.Router();
 
 router.get("/", authenticateToken, async (req, res) => {
+
   try {
-    const users = await pool.query("SELECT * FROM users");
+    const userRole = req.query.user_role;
+    let users;
+
+    if(userRole){
+      users = await pool.query(
+        "SELECT * FROM users WHERE user_role = $1",
+        [userRole]
+      );
+    }else{
+      users = await pool.query("SELECT * FROM users");
+    }
+     
     res.json({ users: users.rows });
   } catch (e) {
     res.status(500).json({ error: e.message });
