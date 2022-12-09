@@ -15,6 +15,8 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const corsOptions = { credentials: true, origin: process.env.URL || "http://localhost:3000" };
 
+
+// TAKE TO SEPAarate file
 app.use(cors(corsOptions));
 app.use(json());
 app.use(cookieParser());
