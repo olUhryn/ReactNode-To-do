@@ -10,7 +10,7 @@ CREATE TABLE users (
 );
 
 
--- create foreing key for users id( who can be owner)
+-- create foreing key for users id (who can be owner)
 CREATE TABLE projects ( 
     project_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), 
     owner_id TEXT NOT NULL, 

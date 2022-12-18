@@ -1,4 +1,4 @@
-import usersRouter from "./routes/users/users.js";
+import usersRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
 import projectsRouter from "./routes/projects.js";
 

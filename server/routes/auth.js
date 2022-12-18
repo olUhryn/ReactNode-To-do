@@ -1,20 +1,19 @@
 import express from "express";
-import pool from "../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtTokens } from "../utils/jwt-helper.js";
 const router = express.Router();
+import usersService from "./services/users-service";
+
 // database related logic ussually separate from routers
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const users = await pool.query(
-      "SELECT * FROM users WHERE user_email = $1",
-      [email]
-    );
+    const users = usersService.getUserByEmail(email);
     if (users.rows.length === 0) {
       return res.status(401).json({ error: "Email not found" });
     }
+
     const validPassword = await bcrypt.compare(
       password,
       users.rows[0].user_password
