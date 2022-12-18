@@ -9,6 +9,8 @@ CREATE TABLE users (
     user_role TEXT
 );
 
+
+-- create foreing key for users id( who can be owner)
 CREATE TABLE projects ( 
     project_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), 
     owner_id TEXT NOT NULL, 
@@ -16,7 +18,7 @@ CREATE TABLE projects (
     owner_name Text NOT NULL,
     creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
+-- change uid to number ids
 CREATE TABLE projects_assignations ( 
     project_id TEXT NOT NULL,
     employee_id TEXT NOT NULL,

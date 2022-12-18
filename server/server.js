@@ -16,6 +16,8 @@ const corsOptions = {
   origin: process.env.URL || "http://localhost:3000",
 };
 
+
+// TAKE TO SEPAarate file
 app.use(cors(corsOptions));
 app.use(json());
 app.use(cookieParser());

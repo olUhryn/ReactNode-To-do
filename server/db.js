@@ -1,6 +1,6 @@
 import pg from "pg";
 const { Pool } = pg;
-
+// move to env
 let localPoolConfig = {
   user: "postgres",
   password: "1",

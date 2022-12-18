@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { jwtTokens } from "../utils/jwt-helper.js";
 const router = express.Router();
-
+// database related logic ussually separate from routers
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
