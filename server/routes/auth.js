@@ -1,9 +1,8 @@
 import express from "express";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { jwtTokens } from "../utils/jwt-helper.js";
+import { setRefreshToken, verifyJwt } from "../utils/jwt-helper.js";
+import { validatePassword } from "../utils/bcrypt-helper.js";
+import usersService from "./services/users-service.js";
 const router = express.Router();
-import usersService from "./services/users-service";
 
 // database related logic ussually separate from routers
 router.post("/login", async (req, res) => {
@@ -14,7 +13,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Email not found" });
     }
 
-    const validPassword = await bcrypt.compare(
+    const validPassword = await validatePassword(
       password,
       users.rows[0].user_password
     );
@@ -22,12 +21,8 @@ router.post("/login", async (req, res) => {
     if (!validPassword) {
       return res.status(401).json({ error: "Incorrect password" });
     } else {
-      let tokens = jwtTokens(users.rows[0]);
-      res.cookie("refresh_token", tokens.refreshToken, {
-        httpOnly: true,
-      });
-      delete tokens.refreshToken;
-      return res.json(tokens);
+      let token = setRefreshToken(res, users.rows[0]);
+      return res.json(token);
     }
   } catch (e) {
     res.status(401).json({ error: e.message });
@@ -40,22 +35,7 @@ router.get("/refresh-token", async (req, res) => {
     if (!refreshToken) {
       res.status(401).json({ error: "Null refresh token" });
     } else {
-      jwt.verify(
-        refreshToken,
-        process.env.REFRESH_TOKEN_SECRET,
-        (error, user) => {
-          if (error) {
-            return res.status(403).json({ error: error.message });
-          } else {
-            let tokens = jwtTokens(user);
-            res.cookie("refresh_token", tokens.refreshToken, {
-              httpOnly: true,
-            });
-            delete tokens.refreshToken;
-            res.json(tokens);
-          }
-        }
-      );
+      verifyJwt(res, refreshToken);
     }
   } catch (e) {
     res.status(401).json({ error: e.message });

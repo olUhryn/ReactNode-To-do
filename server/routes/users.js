@@ -1,8 +1,8 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { authenticateToken } from "../middleware/authorization.js";
-import { jwtTokens } from "../utils/jwt-helper.js";
-import usersService from "./services/users-service";
+import { setRefreshToken } from "../utils/jwt-helper.js";
+import usersService from "./services/users-service.js";
 const router = express.Router();
 
 router.get("/", authenticateToken, async (req, res) => {
@@ -11,9 +11,9 @@ router.get("/", authenticateToken, async (req, res) => {
     let users;
 
     if (userRole) {
-      users = usersService.getUserByEmail(userRole);
+      users = await usersService.getUserByEmail(userRole);
     } else {
-      users = usersService.getAllUsers();
+      users = await usersService.getAllUsers();
     }
 
     res.json({ users: users.rows });
@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
     const password = req.query.user_password;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const users = usersService.createUser(name, email, hashedPassword);
+    const users = await usersService.createUser(name, email, hashedPassword);
 
     res.json({ users: users.rows[0] });
   } catch (e) {
@@ -41,12 +41,9 @@ router.post("/update-user", async (req, res) => {
   try {
     const role = req.body.user_role;
     const userId = req.body.user_id;
-    const users = usersService.updateUserRole(role, userId);
+    const users = await usersService.updateUserRole(role, userId);
 
-    let tokens = jwtTokens(users.rows[0]);
-    res.cookie("refresh_token", tokens.refreshToken, {
-      httpOnly: true,
-    });
+    setRefreshToken(users.rows[0]);
 
     res.json({ ...users.rows[0] });
   } catch (e) {

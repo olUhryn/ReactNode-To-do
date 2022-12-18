@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateToken } from "../middleware/authorization.js";
-import projectsService from "./services/projects-service";
+import projectsService from "./services/projects-service.js";
 const router = express.Router();
 
 router.get("/", authenticateToken, async (req, res) => {
@@ -46,7 +46,7 @@ router.post("/", async (req, res) => {
     const ownerName = req.body.user_name;
     const ownerId = req.body.user_id;
 
-    const projects = projectsService.createProject(
+    const projects = await projectsService.createProject(
       ownerId,
       ownerName,
       projectName
@@ -65,7 +65,7 @@ router.post("/projects-assignations", async (req, res) => {
     const employeeId = req.body.employee_id;
     const projectId = req.body.project_id;
 
-    const projectsAssignations = projectsService.assignToProject(
+    const projectsAssignations = await projectsService.assignToProject(
       projectId,
       employeeId,
       projectName,
