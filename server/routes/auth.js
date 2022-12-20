@@ -2,13 +2,17 @@ import express from "express";
 import { setRefreshToken, verifyJwt } from "../utils/jwt-helper.js";
 import { validatePassword } from "../utils/bcrypt-helper.js";
 import usersService from "./services/users-service.js";
+import { validateUser } from "./validators/user.js";
+import { body, validationResult } from "express-validator";
+
 const router = express.Router();
 
 // database related logic ussually separate from routers
-router.post("/login", async (req, res) => {
+router.post("/login", validateUser, async (req, res) => {
   try {
     const { email, password } = req.body;
-    const users = usersService.getUserByEmail(email);
+
+    const users = await usersService.getUserByEmail(email);
     if (users.rows.length === 0) {
       return res.status(401).json({ error: "Email not found" });
     }
