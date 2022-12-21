@@ -1,47 +1,52 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE DATABASE tododb;
 
 CREATE TABLE users ( 
-    user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), 
-    user_name TEXT NOT NULL, 
-    user_email TEXT NOT NULL,
-    user_password TEXT NOT NULL,
-    user_role TEXT
+    user_id int NOT NULL, 
+    user_name VARCHAR(30) NOT NULL, 
+    user_email VARCHAR(30) NOT NULL,
+    user_password VARCHAR(30) NOT NULL,
+    user_role VARCHAR(15),
+    PRIMARY KEY (user_id),
+    FOREIGN KEY (user_id) REFERENCES projects(owner_id),
+    FOREIGN KEY (user_id) REFERENCES projects_assignations(user_id),
+    FOREIGN KEY (user_id) REFERENCES comments(owner_id)
 );
 
-
--- create foreing key for users id (who can be owner)
 CREATE TABLE projects ( 
-    project_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), 
-    owner_id TEXT NOT NULL, 
-    project_name TEXT NOT NULL,
-    owner_name Text NOT NULL,
-    creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    project_id int NOT NULL, 
+    owner_id int NOT NULL, 
+    project_name VARCHAR(30) NOT NULL,
+    owner_name VARCHAR(30) NOT NULL,
+    creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (project_id),
+    FOREIGN KEY (project_id) REFERENCES projects_assignations(project_id),
+    FOREIGN KEY (project_id) REFERENCES tasks(project_id)
+
 );
--- change uid to number ids
+
 CREATE TABLE projects_assignations ( 
-    project_id TEXT NOT NULL,
-    employee_id TEXT NOT NULL,
-    project_name TEXT NOT NULL,
-    employee_name TEXT NOT NULL
+    project_id int NOT NULL,
+    user_id int NOT NULL
 );
 
 CREATE TABLE tasks ( 
-    task_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), 
-    project_id TEXT NOT NULL,
-    task_name TEXT NOT NULL,
-    task_status TEXT NOT NULL,
+    task_id int NOT NULL, 
+    project_id int NOT NULL,
+    task_name VARCHAR(60) NOT NULL,
+    task_status VARCHAR(20) NOT NULL,
     creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    employee_id TEXT
+    employee_id TEXT,
+    PRIMARY KEY (task_id),
+    FOREIGN KEY (task_id) REFERENCES comments(task_id),
 );
 
 CREATE TABLE comments ( 
-    comment_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), 
-    owner_id TEXT NOT NULL,
-    task_id TEXT NOT NULL,
-    user_name TEXT NOT NULL,
+    comment_id int NOT NULL, 
+    owner_id int NOT NULL,
+    task_id int NOT NULL,
     creation_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    comment_description TEXT NOT NULL
+    comment_description VARCHAR(1000) NOT NULL,
+    PRIMARY KEY (comment_id),
 );
 
 SELECT * FROM users;

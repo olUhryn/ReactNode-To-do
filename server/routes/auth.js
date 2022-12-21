@@ -2,13 +2,11 @@ import express from "express";
 import { setRefreshToken, verifyJwt } from "../utils/jwt-helper.js";
 import { validatePassword } from "../utils/bcrypt-helper.js";
 import usersService from "./services/users-service.js";
-import { validateUser } from "./validators/user.js";
-import { body, validationResult } from "express-validator";
+import { validateAuth } from "./validators/user.js";
 
 const router = express.Router();
 
-// database related logic ussually separate from routers
-router.post("/login", validateUser, async (req, res) => {
+router.post("/login", validateAuth, async (req, res) => {
   try {
     const { email, password } = req.body;
 
