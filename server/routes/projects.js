@@ -17,7 +17,7 @@ router.get("/", authenticateToken, async (req, res) => {
       projects = await projectsService.getAllProjects();
     }
 
-    res.json({ projects: projects.rows });
+    res.json({ projects });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -29,11 +29,13 @@ router.get("/assignations", authenticateToken, async (req, res) => {
     const projectId = req.query.project_id;
 
     if (projectId) {
-      assignations = await projectsService.getAssignationsByProjectId(v);
+      assignations = await projectsService.getAssignationsByProjectId(
+        projectId
+      );
     }
 
     if (assignations) {
-      res.json({ assignations: assignations.rows });
+      res.json({ assignations });
     }
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -46,13 +48,13 @@ router.post("/", async (req, res) => {
     const ownerName = req.body.user_name;
     const ownerId = req.body.user_id;
 
-    const projects = await projectsService.createProject(
+    const project = await projectsService.createProject(
       ownerId,
       ownerName,
       projectName
     );
 
-    res.json(projects.rows[0]);
+    res.json(project);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -65,14 +67,14 @@ router.post("/projects-assignations", async (req, res) => {
     const employeeId = req.body.employee_id;
     const projectId = req.body.project_id;
 
-    const projectsAssignations = await projectsService.assignToProject(
+    const projectsAssignation = await projectsService.assignToProject(
       projectId,
       employeeId,
       projectName,
       employeeName
     );
 
-    res.json(projectsAssignations.rows[0]);
+    res.json(projectsAssignation);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

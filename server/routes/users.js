@@ -12,12 +12,12 @@ router.get("/", authenticateToken, async (req, res) => {
     let users;
 
     if (userRole) {
-      users = await usersService.getUserByEmail(userRole);
+      users = await usersService.getUsersByRole(userRole);
     } else {
       users = await usersService.getAllUsers();
     }
 
-    res.json({ users: users.rows });
+    res.json({ users });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -30,9 +30,9 @@ router.post("/", validateUser, async (req, res) => {
     const password = req.query.user_password;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const users = await usersService.createUser(name, email, hashedPassword);
+    const user = await usersService.createUser(name, email, hashedPassword);
 
-    res.json({ users: users.rows[0] });
+    res.json({ ...user });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -42,11 +42,11 @@ router.post("/update-user", validateUserRole, async (req, res) => {
   try {
     const role = req.body.user_role;
     const userId = req.body.user_id;
-    const users = await usersService.updateUserRole(role, userId);
+    const user = await usersService.updateUserRole(role, userId);
 
-    setRefreshToken(users.rows[0]);
+    setRefreshToken(user);
 
-    res.json({ ...users.rows[0] });
+    res.json({ ...user });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

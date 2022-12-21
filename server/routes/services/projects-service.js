@@ -2,31 +2,39 @@ import projectRepository from "../repositories/projects-repository.js";
 
 export default {
   async getAllProjects() {
-    return await projectRepository.getAllProjects();
+    let projects = await projectRepository.getAllProjects();
+    return projects.rows.length ? projects.rows : [];
   },
   async getProjectById(projectId) {
-    return await projectRepository.getProjectById(projectId);
+    let projects = await projectRepository.getProjectById(projectId);
+    return projects.rows.length ? projects.rows : [];
   },
   async getProjectByOwner(ownerId) {
-    return await projectRepository.getProjectByOwner(ownerId);
+    let projects = await projectRepository.getProjectByOwner(ownerId);
+    return projects.rows.length ? projects.rows : [];
   },
   async getAssignationsByProjectId(projectId) {
-    return await projectRepository.getAssignationsByProjectId(projectId);
+    let assignations = await projectRepository.getAssignationsByProjectId(
+      projectId
+    );
+    return assignations.rows.length ? projects.rows : [];
   },
   async createProject(ownerId, ownerName, projectName) {
-    return await projectRepository.createProject(
+    let projects = await projectRepository.createProject(
       ownerId,
       ownerName,
       projectName
     );
+    return projects.rows.length ? projects.rows[0] : [];
   },
   async assignToProject(projectId, employeeId, projectName, employeeName) {
-    return await projectRepository.assignToProject(
+    let projects = await projectRepository.assignToProject(
       projectId,
       employeeId,
       projectName,
       employeeName
     );
+    return projects.rows.length ? projects.rows[0] : [];
   },
   async getProjectDetails(projectId, employeeId, projectName, employeeName) {
     return await projectRepository.getProjectDetails(
@@ -37,4 +45,3 @@ export default {
     );
   },
 };
-

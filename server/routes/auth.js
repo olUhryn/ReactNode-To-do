@@ -10,20 +10,20 @@ router.post("/login", validateAuth, async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const users = await usersService.getUserByEmail(email);
-    if (users.rows.length === 0) {
+    const user = await usersService.getUserByEmail(email);
+    if (!user) {
       return res.status(401).json({ error: "Email not found" });
     }
 
     const validPassword = await validatePassword(
       password,
-      users.rows[0].user_password
+      user.user_password
     );
 
     if (!validPassword) {
       return res.status(401).json({ error: "Incorrect password" });
     } else {
-      let token = setRefreshToken(res, users.rows[0]);
+      let token = setRefreshToken(res, user);
       return res.json(token);
     }
   } catch (e) {

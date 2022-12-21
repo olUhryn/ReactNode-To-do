@@ -33,6 +33,7 @@ export default {
     );
   },
   async getProjectDetails(projectId, employeeId, projectName, employeeName) {
+    // TODO: details
     return await pool.query(
       "SELECT * FROM",
       [projectId, employeeId, projectName, employeeName]
