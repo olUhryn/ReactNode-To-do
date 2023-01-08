@@ -15,6 +15,7 @@ function ManagePanel() {
   return (
     <div>
       <Container>
+        <div className="container">
         <Row className="d-flex justify-content-center">
           <Col className="d-flex col-12 pt-5 align-items-center flex-column">
             {userData?.user_role ? (
@@ -31,6 +32,7 @@ function ManagePanel() {
             )}
           </Col>
         </Row>
+        </div>
       </Container>
     </div>
   );

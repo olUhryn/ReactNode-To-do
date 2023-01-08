@@ -94,8 +94,8 @@ function Authentication() {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const history = useHistory();
+
   const switchTabs = (value) => {
-    console.log(value);
     setActiveTab(value);
   };
 
@@ -105,15 +105,15 @@ function Authentication() {
       .post(
         "http://localhost:8080/api/auth/login",
         {
-          email,
-          password,
+          user_email: email,
+          user_password: password,
         },
         { withCredentials: true }
       )
       .then((res) => {
         if (res.status === 200) {
           localStorage.setItem("accessToken", res.data.accessToken);
-          console.log(res);
+
           function parseJwt(token) {
             if (!token) {
               return;
@@ -122,6 +122,7 @@ function Authentication() {
             const base64 = base64Url.replace("-", "+").replace("_", "/");
             return JSON.parse(window.atob(base64));
           }
+
           let userData = parseJwt(res.data.accessToken);
           dispatch(setUserData(userData));
           history.push("/manage-panel");
@@ -132,13 +133,15 @@ function Authentication() {
   const SignUp = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:8080/api/users", {
-        email,
-        name,
-        password,
-      })
+      .post(
+        "http://localhost:8080/api/users",
+        {
+          user_email: email,
+          user_name: name,
+          user_password: password,
+        }
+      )
       .then((response) => {
-        console.log(response);
         if (response.status === 200) {
           setActiveTab(0);
         }

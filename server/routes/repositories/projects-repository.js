@@ -1,42 +1,90 @@
-import pool from "../../db.js";
+import dataSource from "../../data-source.js";
+let Projects = dataSource.getRepository("Projects");
+let ProjectAssignations = dataSource.getRepository("ProjectAssignations");
+let Users = dataSource.getRepository("Users");
 
 export default {
   async getAllProjects() {
-    return await pool.query("SELECT * FROM projects");
+    return await Projects.find();
   },
   async getProjectById(projectId) {
-    return await pool.query("SELECT * FROM projects WHERE project_id = $1", [
-      projectId,
-    ]);
+    return await Projects.findOneBy({
+      project_id: projectId,
+    });
   },
   async getProjectByOwner(ownerId) {
-    return await pool.query("SELECT * FROM projects WHERE owner_id = $1", [
-      ownerId,
-    ]);
+    return await Projects.findOneBy({
+      owner_id: ownerId,
+    });
   },
   async getAssignationsByProjectId(projectId) {
-    return await pool.query(
-      "SELECT * FROM projects_assignations WHERE project_id = $1",
-      [projectId]
-    );
+    let assignedUsers = await ProjectAssignations.findBy({
+      project_id: projectId,
+    });
+    console.log(assignedUsers.map((assignation) => assignation.user_id));
+    let users = await Users.createQueryBuilder("user")
+      .where("user.user_id IN (:...ids)", {
+        ids: assignedUsers.map((assignation) => assignation.user_id),
+      })
+      .getMany();
+    console.log(users);
+    return users;
+  },
+  async getAvailablAssignationsByProjectId(projectId) {
+    let assignedUsers = await ProjectAssignations.findBy({
+      project_id: projectId,
+    });
+    console.log(assignedUsers.map((assignation) => assignation.user_id));
+    let users = await Users.createQueryBuilder("user")
+      .where("user.user_id NOT IN (:...ids)", {
+        ids: assignedUsers.map((assignation) => assignation.user_id),
+      })
+      .getMany();
+    console.log(users);
+    return users;
   },
   async createProject(ownerId, ownerName, projectName) {
-    return await pool.query(
-      "INSERT INTO projects (owner_id, owner_name, project_name) VALUES ($1,$2,$3) RETURNING *",
-      [ownerId, ownerName, projectName]
-    );
+    return await Projects.save({
+      owner_id: ownerId,
+      owner_name: ownerName,
+      project_name: projectName,
+    });
   },
-  async assignToProject(projectId, employeeId, projectName, employeeName) {
-    return await pool.query(
-      "INSERT INTO projects_assignations (project_id, employee_id, project_name, employee_name) VALUES ($1,$2,$3, $4) RETURNING *",
-      [projectId, employeeId, projectName, employeeName]
-    );
+  async deleteAssignation(projectId, userId) {
+    await ProjectAssignations.delete({
+      user_id: userId,
+      project_id: projectId,
+    });
+
+    let assignedUsers = await ProjectAssignations.findBy({
+      project_id: projectId,
+    });
+
+    console.log(assignedUsers.map((item) => [item.project_id, item.user_id]));
+    let users = await Users.createQueryBuilder("user")
+      .where("user.user_id NOT IN (:...ids)", {
+        ids: assignedUsers.map((assignation) => assignation.user_id),
+      })
+      .getMany();
+    return users;
+  },
+  async assignToProject(projectId, userId) {
+    let projectAssignation = await ProjectAssignations.save({
+      project_id: projectId,
+      user_id: userId,
+    });
+
+    return await Users.findOneBy({
+      user_id: projectAssignation.user_id,
+    });
   },
   async getProjectDetails(projectId, employeeId, projectName, employeeName) {
     // TODO: details
-    return await pool.query(
-      "SELECT * FROM",
-      [projectId, employeeId, projectName, employeeName]
-    );
+    // return await pool.query("SELECT * FROM", [
+    //   projectId,
+    //   employeeId,
+    //   projectName,
+    //   employeeName,
+    // ]);
   },
 };

@@ -49,41 +49,70 @@ function Project(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(params.id);
-
-    axios
-      .get(`http://localhost:8080/api/projects?project_id=${params.id}`, {
+    let getProjectById = axios.get(
+      `http://localhost:8080/api/projects?project_id=${params.id}`,
+      {
         withCredentials: true,
-      })
-      .then((res) => {
-        console.log(res.data);
-        dispatch(setCurrentProject(res.data.projects[0]));
-      });
-
-    axios
-      .get(
-        `http://localhost:8080/api/projects/assignations?project_id=${params.id}`,
-        {
-          withCredentials: true,
-        }
-      )
-      .then((res) => {
-        console.log(res.data);
-        dispatch(setProjectAssignedUsers(res.data.employees));
-      });
-
-    axios
-      .get(`http://localhost:8080/api/users?user_role=Developer`, {
+      }
+    );
+    let getProjectAssignations = axios.get(
+      `http://localhost:8080/api/projects/assignations?project_id=${params.id}`,
+      {
         withCredentials: true,
-      })
-      .then((res) => {
-        console.log(res.data);
-        dispatch(setProjectAvailableUsers(res.data.users));
+      }
+    );
+
+    let getProjectAvailableUsers = axios.get(
+      `http://localhost:8080/api/projects/available-assignations?project_id=${params.id}`,
+      {
+        withCredentials: true,
+      }
+    );
+    console.log("jhre");
+    !projectAvailableUsers.length &&
+      Promise.all([
+        getProjectById,
+        getProjectAssignations,
+        getProjectAvailableUsers,
+      ]).then((values) => {
+        console.log(values);
+        let project = values[0];
+        let projectAssignedUser = values[1];
+        let projectUsers = values[2];
+
+        dispatch(setCurrentProject(project.data.projects));
+        dispatch(
+          setProjectAssignedUsers(projectAssignedUser.data.assignations)
+        );
+        dispatch(setProjectAvailableUsers(projectUsers.data.assignations));
       });
+    return dispatch(setProjectAvailableUsers([]));
   }, []);
 
-  const removeUser = (e) => {
+  const removeUser = (e, user) => {
     e.preventDefault();
+    axios
+      .post(
+        "http://localhost:8080/api/projects/delete-assignation",
+        {
+          user_id: user.user_id,
+          project_id: currentProject.project_id,
+        },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        dispatch(setProjectAvailableUsers([...res.data.assignations]));
+        axios
+          .get(
+            `http://localhost:8080/api/projects/assignations?project_id=${params.id}`,
+            {
+              withCredentials: true,
+            }
+          )
+          .then((res) => {
+            dispatch(setProjectAssignedUsers(res.data.assignations));
+          });
+      });
   };
 
   const assignUser = (e, user) => {
@@ -92,18 +121,27 @@ function Project(props) {
       .post(
         "http://localhost:8080/api/projects/projects-assignations",
         {
-          employee_name: user.user_name,
-          employee_id: user.user_id,
-          project_name: projectName,
+          user_id: user.user_id,
           project_id: currentProject.project_id,
         },
         { withCredentials: true }
       )
       .then((res) => {
         dispatch(setProjectAssignedUsers([...projectAssignedUsers, res.data]));
+        axios
+          .get(
+            `http://localhost:8080/api/projects/available-assignations?project_id=${params.id}`,
+            {
+              withCredentials: true,
+            }
+          )
+          .then((res) => {
+            console.log(res.data.assignations);
+            dispatch(setProjectAvailableUsers([...res.data.assignations]));
+          });
       });
   };
-  console.log(projectAssignedUsers)
+
   return (
     <Row className="d-flex justify-content-center w-100">
       <h3 className="mb-2 mt-5 d-flex justify-content-center">
@@ -112,27 +150,29 @@ function Project(props) {
       <Col className="col-6 d-flex flex-column ">
         {" "}
         <h3 className="mb-2">Assigned users:</h3>
-        {projectAssignedUsers.map((user) => (
+        {projectAssignedUsers?.map((user) => (
           <div
             className="p-2 project-item mb-2 d-flex justify-content-between"
-            key={user.employee_id + "employee"}
-            onClick={(e) => removeUser(e)}
+            key={user.user_id + "employee"}
+            onClick={(e) => removeUser(e, user)}
           >
-            <span>{user.employee_name}</span> <span>{">"}</span>
+            <span>{user.user_name}</span> <span>{">"}</span>
           </div>
         ))}
       </Col>
       <Col className="col-6 d-flex flex-column">
         <h3 className="mb-2">Available users:</h3>
-        {projectAvailableUsers.map((user) => (
-          <div
-            className="p-2 project-item mb-2"
-            key={user.user_id}
-            onClick={(e) => assignUser(e, user)}
-          >
-            {"<"} {user.user_name}
-          </div>
-        ))}
+        {projectAvailableUsers.length
+          ? projectAvailableUsers.map((user) => (
+              <div
+                className="p-2 project-item mb-2"
+                key={user.user_id}
+                onClick={(e) => assignUser(e, user)}
+              >
+                {"<"} {user.user_name}
+              </div>
+            ))
+          : null}
       </Col>
     </Row>
   );

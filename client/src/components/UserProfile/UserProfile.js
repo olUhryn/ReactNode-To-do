@@ -11,8 +11,8 @@ function UserProfile(props) {
   const history = useHistory();
   const dispatch = useDispatch();
   const setRole = (e) => {
+    console.log(props.userData.user_id);
     e.preventDefault();
-    console.log(userRole);
     axios
       .post(
         "http://localhost:8080/api/users/update-user",
@@ -42,7 +42,6 @@ function UserProfile(props) {
               const base64 = base64Url.replace("-", "+").replace("_", "/");
               return JSON.parse(window.atob(base64));
             }
-            console.log(parseJwt(res.data.accessToken));
             dispatch(setUserData(parseJwt(res.data.accessToken)));
             history.push("/manage-panel");
           });

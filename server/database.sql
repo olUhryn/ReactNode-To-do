@@ -13,7 +13,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE projects ( 
-    project_id int NOT NULL, 
+    project_id SERIAL int NOT NULL, 
     owner_id int NOT NULL, 
     project_name VARCHAR(30) NOT NULL,
     owner_name VARCHAR(30) NOT NULL,
@@ -25,6 +25,7 @@ CREATE TABLE projects (
 );
 
 CREATE TABLE projects_assignations ( 
+    assignation_id: SERIAL int NOT NULL
     project_id int NOT NULL,
     user_id int NOT NULL
 );
@@ -62,7 +63,7 @@ UPDATE users
 SET user_role = 'Alfred Schmidt'
 WHERE user_id = 1;
 
---DROP TABLE users;
+--DROP TABLE projects_assignations;
 --psql -U postgres 
 --\c tododb
 --\dt 

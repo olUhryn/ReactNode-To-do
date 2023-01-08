@@ -35,8 +35,42 @@ router.get("/assignations", authenticateToken, async (req, res) => {
     }
 
     if (assignations) {
-      res.json({ assignations });
+      res.json({ assignations: assignations });
     }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.get("/available-assignations", async (req, res) => {
+  try {
+    let assignations = null;
+    const projectId = req.query.project_id;
+
+    if (projectId) {
+      assignations = await projectsService.getAvailablAssignationsByProjectId(
+        projectId
+      );
+    }
+
+    if (assignations) {
+      res.json({ assignations: assignations });
+    }
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.post("/delete-assignation", async (req, res) => {
+  try {
+    const projectId = req.body.project_id;
+    const userId = req.body.user_id;
+    console.log(projectId,userId);
+    const projectsAssignation = await projectsService.deleteAssignation(
+      projectId,
+      userId
+    );
+    res.json({ assignations: projectsAssignation });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -62,18 +96,13 @@ router.post("/", async (req, res) => {
 
 router.post("/projects-assignations", async (req, res) => {
   try {
-    const projectName = req.body.project_name;
-    const employeeName = req.body.employee_name;
-    const employeeId = req.body.employee_id;
+    const userId = req.body.user_id;
     const projectId = req.body.project_id;
 
     const projectsAssignation = await projectsService.assignToProject(
       projectId,
-      employeeId,
-      projectName,
-      employeeName
+      userId
     );
-
     res.json(projectsAssignation);
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -85,7 +114,6 @@ router.post("/projects-assignations", async (req, res) => {
 //     let projects = null;
 //     let employees = null;
 //     const projectId = req.query.project_id;
-//     console.log(req.query);
 //     if (projectId) {
 //       employees = await pool.query(
 //         "SELECT * FROM projects_assignations WHERE project_id = $1",
