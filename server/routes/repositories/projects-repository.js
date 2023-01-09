@@ -13,7 +13,7 @@ export default {
     });
   },
   async getProjectByOwner(ownerId) {
-    return await Projects.findOneBy({
+    return await Projects.findBy({
       owner_id: ownerId,
     });
   },
@@ -21,26 +21,39 @@ export default {
     let assignedUsers = await ProjectAssignations.findBy({
       project_id: projectId,
     });
-    console.log(assignedUsers.map((assignation) => assignation.user_id));
-    let users = await Users.createQueryBuilder("user")
-      .where("user.user_id IN (:...ids)", {
-        ids: assignedUsers.map((assignation) => assignation.user_id),
-      })
-      .getMany();
-    console.log(users);
+    let users;
+
+    if (assignedUsers.length) {
+      users = await Users.createQueryBuilder("user")
+        .where("user.user_id IN (:...ids)", {
+          ids: assignedUsers.map((assignation) => assignation.user_id),
+        })
+        .getMany();
+    } else {
+      users = assignedUsers;
+    }
+
     return users;
   },
   async getAvailablAssignationsByProjectId(projectId) {
     let assignedUsers = await ProjectAssignations.findBy({
       project_id: projectId,
     });
-    console.log(assignedUsers.map((assignation) => assignation.user_id));
-    let users = await Users.createQueryBuilder("user")
-      .where("user.user_id NOT IN (:...ids)", {
-        ids: assignedUsers.map((assignation) => assignation.user_id),
-      })
-      .getMany();
-    console.log(users);
+    let users;
+
+    if (assignedUsers.length) {
+      users = await Users.createQueryBuilder("user")
+        .where("user.user_id NOT IN (:...ids)", {
+          ids: assignedUsers.map((assignation) => assignation.user_id),
+        })
+        .andWhere("(user.user_role = 'Developer')")
+        .getMany();
+    } else {
+      users = await Users.findBy({
+        user_role: "Developer",
+      });
+    }
+
     return users;
   },
   async createProject(ownerId, ownerName, projectName) {
@@ -60,12 +73,21 @@ export default {
       project_id: projectId,
     });
 
-    console.log(assignedUsers.map((item) => [item.project_id, item.user_id]));
-    let users = await Users.createQueryBuilder("user")
-      .where("user.user_id NOT IN (:...ids)", {
-        ids: assignedUsers.map((assignation) => assignation.user_id),
-      })
-      .getMany();
+    let users;
+
+    if (assignedUsers.length) {
+      users = await Users.createQueryBuilder("user")
+        .where("user.user_id NOT IN (:...ids)", {
+          ids: assignedUsers.map((assignation) => assignation.user_id),
+        })
+        .andWhere("(user.user_role = 'Developer')")
+        .getMany();
+    } else {
+      users = await Users.findBy({
+        user_role: "Developer",
+      });
+    }
+
     return users;
   },
   async assignToProject(projectId, userId) {

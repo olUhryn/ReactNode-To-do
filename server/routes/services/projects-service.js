@@ -7,6 +7,9 @@ export default {
   async getProjectById(projectId) {
     return await projectRepository.getProjectById(projectId);
   },
+  async getProjectsById(projectId) {
+    return await projectRepository.getProjectById(projectId);
+  },
   async getProjectByOwner(ownerId) {
     return await projectRepository.getProjectByOwner(ownerId);
   },

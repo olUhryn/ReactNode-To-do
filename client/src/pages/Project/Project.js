@@ -68,14 +68,12 @@ function Project(props) {
         withCredentials: true,
       }
     );
-    console.log("jhre");
     !projectAvailableUsers.length &&
       Promise.all([
         getProjectById,
         getProjectAssignations,
         getProjectAvailableUsers,
       ]).then((values) => {
-        console.log(values);
         let project = values[0];
         let projectAssignedUser = values[1];
         let projectUsers = values[2];
@@ -84,11 +82,16 @@ function Project(props) {
         dispatch(
           setProjectAssignedUsers(projectAssignedUser.data.assignations)
         );
-        dispatch(setProjectAvailableUsers(projectUsers.data.assignations));
+        dispatch(setProjectAvailableUsers([...projectUsers.data.assignations]));
       });
-    return dispatch(setProjectAvailableUsers([]));
+    return removeData;
   }, []);
 
+  const removeData = () => {
+    dispatch(setCurrentProject([]));
+    dispatch(setProjectAssignedUsers([]));
+    dispatch(setProjectAvailableUsers([]));
+  };
   const removeUser = (e, user) => {
     e.preventDefault();
     axios
@@ -136,7 +139,6 @@ function Project(props) {
             }
           )
           .then((res) => {
-            console.log(res.data.assignations);
             dispatch(setProjectAvailableUsers([...res.data.assignations]));
           });
       });

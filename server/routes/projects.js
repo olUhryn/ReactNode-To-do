@@ -6,13 +6,12 @@ const router = express.Router();
 router.get("/", authenticateToken, async (req, res) => {
   try {
     let projects = null;
-    const ownerId = req.query.onwer_id;
+    const ownerId = req.query.owner_id;
     const projectId = req.query.project_id;
-
     if (projectId) {
       projects = await projectsService.getProjectById(projectId);
     } else if (ownerId) {
-      projects = await projectsService.getProjectByOwner(projectId);
+      projects = await projectsService.getProjectByOwner(ownerId);
     } else {
       projects = await projectsService.getAllProjects();
     }
