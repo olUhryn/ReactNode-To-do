@@ -1,6 +1,13 @@
 import express from "express";
 import { authenticateToken } from "../middleware/authorization.js";
 import projectsService from "./services/projects-service.js";
+import tasksService from "./services/tasks-service.js";
+import {
+  validateProject,
+  validateTask,
+  validateComment,
+} from "./validators/project.js";
+
 const router = express.Router();
 
 router.get("/", authenticateToken, async (req, res) => {
@@ -8,10 +15,15 @@ router.get("/", authenticateToken, async (req, res) => {
     let projects = null;
     const ownerId = req.query.owner_id;
     const projectId = req.query.project_id;
+    const assignationId = req.query.user_id;
     if (projectId) {
       projects = await projectsService.getProjectById(projectId);
     } else if (ownerId) {
       projects = await projectsService.getProjectByOwner(ownerId);
+    } else if (assignationId) {
+      projects = await projectsService.getProjectsByAssignationId(
+        assignationId
+      );
     } else {
       projects = await projectsService.getAllProjects();
     }
@@ -64,7 +76,7 @@ router.post("/delete-assignation", async (req, res) => {
   try {
     const projectId = req.body.project_id;
     const userId = req.body.user_id;
-    console.log(projectId,userId);
+
     const projectsAssignation = await projectsService.deleteAssignation(
       projectId,
       userId
@@ -75,7 +87,7 @@ router.post("/delete-assignation", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", validateProject, async (req, res) => {
   try {
     const projectName = req.body.project_name;
     const ownerName = req.body.user_name;
@@ -108,26 +120,116 @@ router.post("/projects-assignations", async (req, res) => {
   }
 });
 
-// router.get("/details", authenticateToken, async (req, res) => {
-//   try {
-//     let projects = null;
-//     let employees = null;
-//     const projectId = req.query.project_id;
-//     if (projectId) {
-//       employees = await pool.query(
-//         "SELECT * FROM projects_assignations WHERE project_id = $1",
-//         [projectId]
-//       );
-//       availableUsers = await pool.query(
-//         "SELECT * FROM users WHERE NOT EXISTS (SELECT * FROM projects_assignations WHERE users.user_id = projects_assignations.employee_id);"[
-//           projectId
-//         ]
-//       );
-//       res.json({ employees: employees.rows });
-//     }
-//   } catch (e) {
-//     res.status(500).json({ error: e.message });
-//   }
-// });
+router.post("/task", validateTask, async (req, res) => {
+  try {
+    const taskName = req.body.task_name;
+    const ownerId = req.body.owner_id;
+    const projectId = req.body.project_id;
 
+    const task = await tasksService.createTask(taskName, ownerId, projectId);
+
+    res.json(task);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.get("/tasks", authenticateToken, async (req, res) => {
+  try {
+    let tasks = null;
+    const projectId = req.query.project_id;
+    tasks = await tasksService.getTasks(projectId);
+
+    res.json({ tasks });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.get("/task", authenticateToken, async (req, res) => {
+  try {
+    let task = null;
+    const taskId = req.query.task_id;
+    task = await tasksService.getTask(taskId);
+
+    res.json(task);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.post("/update-task", async (req, res) => {
+  try {
+    const taskId = req.body.task_id;
+    const taskDescription = req.body.task_description;
+    const taskStatus = req.body.task_status;
+    const assignedUser = req.body.assigned_user_id;
+
+    const task = await tasksService.updateTask(
+      taskId,
+      taskDescription,
+      taskStatus,
+      assignedUser
+    );
+
+    res.json(task);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.post("/delete-task", async (req, res) => {
+  try {
+    const taskId = req.body.task_id;
+
+    const task = await tasksService.deleteTask(taskId);
+
+    res.json(task);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.post("/task/comment", validateComment, async (req, res) => {
+  try {
+    const taskId = req.body.task_id;
+    const commentDescription = req.body.comment_description;
+    const ownerId = req.body.owner_id;
+
+    const comment = await tasksService.createComment(
+      taskId,
+      commentDescription,
+      ownerId
+    );
+
+    res.json(comment);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.get("/task/comments", authenticateToken, async (req, res) => {
+  try {
+    let comments = null;
+    const taskId = req.query.task_id;
+    comments = await tasksService.getComments(taskId);
+
+    res.json(comments);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+router.post("/delete-project", async (req, res) => {
+  try {
+    const projectId = req.body.project_id;
+    const ownerId = req.body.owner_id;
+
+    const proejcts = await projectsService.deleteProject(projectId, ownerId);
+
+    res.json(proejcts);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 export default router;

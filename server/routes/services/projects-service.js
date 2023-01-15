@@ -30,7 +30,9 @@ export default {
     return await projectRepository.deleteAssignation(projectId, userId);
   },
   async getAvailablAssignationsByProjectId(projectId) {
-    return await projectRepository.getAvailablAssignationsByProjectId(projectId);
+    return await projectRepository.getAvailablAssignationsByProjectId(
+      projectId
+    );
   },
   async getProjectDetails(projectId, employeeId, projectName, employeeName) {
     return await projectRepository.getProjectDetails(
@@ -39,5 +41,11 @@ export default {
       projectName,
       employeeName
     );
+  },
+  async deleteProject(projectId, ownerId) {
+    return await projectRepository.deleteProject(projectId,ownerId);
+  },
+  async getProjectsByAssignationId(userId) {
+    return await projectRepository.getProjectsByAssignationId(userId);
   },
 };

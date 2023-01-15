@@ -5,15 +5,15 @@ let Users = dataSource.getRepository("Users");
 
 export default {
   async getAllProjects() {
-    return await Projects.find();
+    return Projects.find();
   },
   async getProjectById(projectId) {
-    return await Projects.findOneBy({
+    return Projects.findOneBy({
       project_id: projectId,
     });
   },
   async getProjectByOwner(ownerId) {
-    return await Projects.findBy({
+    return Projects.findBy({
       owner_id: ownerId,
     });
   },
@@ -57,7 +57,7 @@ export default {
     return users;
   },
   async createProject(ownerId, ownerName, projectName) {
-    return await Projects.save({
+    return Projects.save({
       owner_id: ownerId,
       owner_name: ownerName,
       project_name: projectName,
@@ -100,13 +100,26 @@ export default {
       user_id: projectAssignation.user_id,
     });
   },
-  async getProjectDetails(projectId, employeeId, projectName, employeeName) {
-    // TODO: details
-    // return await pool.query("SELECT * FROM", [
-    //   projectId,
-    //   employeeId,
-    //   projectName,
-    //   employeeName,
-    // ]);
+  async deleteProject(projectId, ownerId) {
+    await Projects.delete({
+      project_id: projectId,
+    });
+
+    return await Projects.findBy({
+      owner_id: ownerId,
+    });
+  },
+  async getProjectsByAssignationId(userId) {
+    let assignations = await ProjectAssignations.findBy({
+      user_id: userId,
+    });
+
+    let projects = await Projects.createQueryBuilder("project")
+      .where("project.project_id IN (:...ids)", {
+        ids: assignations.map((assignation) => assignation.project_id),
+      })
+      .getMany();
+      
+    return projects;
   },
 };

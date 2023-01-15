@@ -2,7 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   projects: [],
-  currentProject: {}
+  currentProject: {},
+  tasks: [],
+  currentTask: null,
+  comments: [],
 };
 
 export const counterSlice = createSlice({
@@ -15,9 +18,24 @@ export const counterSlice = createSlice({
     setCurrentProject: (state, action) => {
       state.currentProject = action.payload;
     },
+    setTasks: (state, action) => {
+      state.tasks = action.payload;
+    },
+    setCurrentTask: (state, action) => {
+      state.currentTask = action.payload;
+    },
+    setComments: (state, action) => {
+      state.comments = action.payload;
+    },
   },
 });
 
-export const { setProjects, setCurrentProject } = counterSlice.actions;
+export const {
+  setProjects,
+  setCurrentProject,
+  setTasks,
+  setCurrentTask,
+  setComments,
+} = counterSlice.actions;
 
 export default counterSlice.reducer;

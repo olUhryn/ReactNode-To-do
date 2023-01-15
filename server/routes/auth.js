@@ -32,7 +32,6 @@ router.post("/login", validateAuth, async (req, res) => {
 });
 
 router.get("/refresh-token", async (req, res) => {
-  console.log(req.cookies.refresh_token)
   try {
     const refreshToken = req.cookies.refresh_token;
     if (!refreshToken) {

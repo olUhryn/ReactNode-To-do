@@ -1,6 +1,7 @@
 import Home from "./pages/Home";
 import ManagePanel from "./pages/ManagePanel";
 import Project from "./pages/Project";
+import Task from "./pages/Task";
 
 const genericRoutes = () => {
   return [
@@ -22,6 +23,12 @@ const genericRoutes = () => {
       name: "Project",
       path: "/project/:id",
       component: Project,
+      exact: true,
+    },
+    {
+      name: "Task",
+      path: "/project/:id/task/:task_id",
+      component: Task,
       exact: true,
     },
   ];

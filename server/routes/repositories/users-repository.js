@@ -3,15 +3,15 @@ let Users = dataSource.getRepository("Users");
 
 export default {
   async getUsersByRole(role) {
-    return await Users.findBy({
+    return Users.findBy({
       user_role: role,
     });
   },
   async getAllUsers() {
-    return await Users.find();
+    return Users.find();
   },
   async createUser(name, email, hashedPassword) {
-    return await Users.save({
+    return Users.save({
       user_name: name,
       user_email: email,
       user_password: hashedPassword,
@@ -26,7 +26,7 @@ export default {
     return await Users.save(user);
   },
   async getUserByEmail(email) {
-    return await Users.findOneBy({
+    return Users.findOneBy({
       user_email: email,
     });
   },

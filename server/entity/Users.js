@@ -36,5 +36,17 @@ export default new EntitySchema({
       joinTable: true,
       cascade: true,
     },
+    tasks: {
+      target: "Tasks",
+      type: "one-to-many",
+      joinTable: true,
+      cascade: true,
+    },
+    comments: {
+      target: "Comments",
+      type: "one-to-many",
+      joinTable: true,
+      cascade: true,
+    },
   },
 });

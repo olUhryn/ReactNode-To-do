@@ -11,7 +11,6 @@ function UserProfile(props) {
   const history = useHistory();
   const dispatch = useDispatch();
   const setRole = (e) => {
-    console.log(props.userData.user_id);
     e.preventDefault();
     axios
       .post(
@@ -26,7 +25,6 @@ function UserProfile(props) {
       )
       .then((response) => {
         // dispatch(setUserData(response.data));
-        console.log(response);
         axios
           .get("http://localhost:8080/api/auth/refresh-token", {
             withCredentials: true,

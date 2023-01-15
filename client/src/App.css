@@ -11,6 +11,7 @@ html,body,#root,.app{
   min-width: 100vw;
   min-height: 100vh;
   margin: 0;
+  height: auto;
   display: flex;
   flex: 1;
   flex-direction: column;

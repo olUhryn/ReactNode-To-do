@@ -5,6 +5,8 @@ import typeorm from "typeorm";
 import Users from "./entity/Users.js";
 import Projects from "./entity/Projects.js";
 import ProjectAssignations from "./entity/ProjectAssignations.js";
+import Tasks from "./entity/Tasks.js";
+import Comments from "./entity/Comments.js";
 
 let dataSource = new typeorm.DataSource({
   type: "postgres",
@@ -13,7 +15,7 @@ let dataSource = new typeorm.DataSource({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   database: process.env.DB_DATABASE_NAME,
-  entities: [Users, Projects, ProjectAssignations],
+  entities: [Users, Projects, ProjectAssignations, Tasks, Comments],
   synchronize: true,
 });
 
