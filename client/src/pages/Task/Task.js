@@ -57,7 +57,10 @@ function Task(props) {
         dispatch(setComments(res.data));
       });
 
-    return dispatch(setCurrentTask(null));
+    return () => {
+      dispatch(setCurrentTask(null));
+      dispatch(setComments([]));
+    };
   }, []);
 
   const setTaskStatus = (e, status) => {
