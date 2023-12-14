@@ -2,23 +2,18 @@ import usersRepository from "../repositories/users-repository.js";
 
 export default {
   async getUsersByRole(role) {
-    let users = await usersRepository.getUsersByRole(role);
-    return users.rows.length ? users.rows : [];
+    return await usersRepository.getUsersByRole(role);
   },
   async getAllUsers() {
-    let users = await usersRepository.getAllUsers();
-    return users.rows.length ? users.rows : [];
+    return await usersRepository.getAllUsers();
   },
   async createUser(name, email, hashedPassword) {
-    let users = await usersRepository.createUser(name, email, hashedPassword);
-    return users.rows.length ? users.rows[0] : {};
+    return await usersRepository.createUser(name, email, hashedPassword);
   },
   async updateUserRole(role, userId) {
-    let users = await usersRepository.updateUserRole(role, userId);
-    return users.rows.length ? users.rows[0] : {};
+    return await usersRepository.updateUserRole(role, userId);
   },
   async getUserByEmail(email) {
-    let users = await usersRepository.getUserByEmail(email);
-    return users.rows.length ? users.rows[0] : null;
+    return await usersRepository.getUserByEmail(email);
   },
 };

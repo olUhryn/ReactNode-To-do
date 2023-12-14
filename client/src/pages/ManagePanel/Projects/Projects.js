@@ -38,14 +38,22 @@ function Projects(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/api/projects?owner_id=${userData.user_id}`, {
-        withCredentials: true,
-      })
-      .then((res) => {
-        console.log(res.data);
-        dispatch(setProjects(res.data.projects));
-      });
+    !projects.length &&
+      axios
+        .get(
+          userData.user_role === "Project Manager"
+            ? `http://localhost:8080/api/projects?owner_id=${userData.user_id}`
+            : `http://localhost:8080/api/projects?user_id=${userData.user_id}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((res) => {
+          dispatch(setProjects(res.data.projects));
+        });
+    return () => {
+      dispatch(setProjects([]));
+    };
   }, []);
 
   const createProject = (e) => {
@@ -69,19 +77,28 @@ function Projects(props) {
     <Row className="d-flex justify-content-center w-100">
       <Col className="col-6 d-flex flex-column">
         <h3 className="mb-2">Projects:</h3>
-        {projects.map((project) => (
-          <div className="p-2 project-item mb-2" key={project.project_id} onClick={(e)=>{history.push(`/project/${project.project_id}`)}}>
-            {project.project_name}
-          </div>
-        ))}
+        {!!projects.length &&
+          projects.map((project) => (
+            <div
+              className="p-2 project-item mb-2"
+              key={project.project_id}
+              onClick={(e) => {
+                history.push(`/project/${project.project_id}`);
+              }}
+            >
+              {project.project_name}
+            </div>
+          ))}
       </Col>
-      <Col className="col-6 d-flex flex-column">
-        <CreateProjectForm
-          setProjectName={setProjectName}
-          createProject={createProject}
-          projectName={projectName}
-        />
-      </Col>
+      {userData.user_role === "Project Manager" && (
+        <Col className="col-6 d-flex flex-column">
+          <CreateProjectForm
+            setProjectName={setProjectName}
+            createProject={createProject}
+            projectName={projectName}
+          />
+        </Col>
+      )}
     </Row>
   );
 }

@@ -8,15 +8,15 @@ const router = express.Router();
 
 router.post("/login", validateAuth, async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { user_email, user_password } = req.body;
 
-    const user = await usersService.getUserByEmail(email);
+    const user = await usersService.getUserByEmail(user_email);
     if (!user) {
       return res.status(401).json({ error: "Email not found" });
     }
 
     const validPassword = await validatePassword(
-      password,
+      user_password,
       user.user_password
     );
 

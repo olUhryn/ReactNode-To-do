@@ -1,27 +1,33 @@
-import pool from "../../db.js";
+import dataSource from "../../data-source.js";
+let Users = dataSource.getRepository("Users");
 
 export default {
   async getUsersByRole(role) {
-    return await pool.query("SELECT * FROM users WHERE user_role = $1", [role]);
+    return Users.findBy({
+      user_role: role,
+    });
   },
   async getAllUsers() {
-    return await pool.query("SELECT * FROM users");
+    return Users.find();
   },
   async createUser(name, email, hashedPassword) {
-    return await pool.query(
-      "INSERT INTO users (user_name,user_email,user_password) VALUES ($1,$2,$3) RETURNING user_role, user_id, user_name, user_email",
-      [name, email, hashedPassword]
-    );
+    return Users.save({
+      user_name: name,
+      user_email: email,
+      user_password: hashedPassword,
+    });
   },
   async updateUserRole(role, userId) {
-    return await pool.query(
-      "UPDATE users SET user_role = $1 WHERE user_id = $2 RETURNING user_role, user_id, user_name, user_email",
-      [role, userId]
-    );
+    let user = await Users.findOneBy({
+      user_id: userId,
+    });
+    user.user_role = role;
+
+    return await Users.save(user);
   },
   async getUserByEmail(email) {
-    return await pool.query("SELECT * FROM users WHERE user_email = $1", [
-      email,
-    ]);
+    return Users.findOneBy({
+      user_email: email,
+    });
   },
 };

@@ -1,0 +1,30 @@
+.project-item {
+  background: #67635f;
+  cursor: pointer;
+}
+
+.description {
+  background: #252321;
+  color: white;
+}
+
+.comment_title {
+  margin-bottom: 8px;
+}
+
+.comment_description {
+  background: #696867;
+  padding: 8px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+}
+.comment_description > span {
+  align-self: self-end;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+.status-select {
+  min-width: 150px;
+}

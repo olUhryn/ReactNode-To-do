@@ -12,7 +12,6 @@ function UserProfile(props) {
   const dispatch = useDispatch();
   const setRole = (e) => {
     e.preventDefault();
-    console.log(userRole);
     axios
       .post(
         "http://localhost:8080/api/users/update-user",
@@ -26,7 +25,6 @@ function UserProfile(props) {
       )
       .then((response) => {
         // dispatch(setUserData(response.data));
-        console.log(response);
         axios
           .get("http://localhost:8080/api/auth/refresh-token", {
             withCredentials: true,
@@ -42,7 +40,6 @@ function UserProfile(props) {
               const base64 = base64Url.replace("-", "+").replace("_", "/");
               return JSON.parse(window.atob(base64));
             }
-            console.log(parseJwt(res.data.accessToken));
             dispatch(setUserData(parseJwt(res.data.accessToken)));
             history.push("/manage-panel");
           });
